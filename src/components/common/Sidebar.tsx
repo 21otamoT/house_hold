@@ -68,7 +68,7 @@ const Sidebar = ({drawerWidth, mobileOpen, handleDrawerToggle, handleDrawerTrans
   return (
     <Box
     component="nav"
-    sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+    sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
     aria-label="mailbox folders"
   >
     <Drawer
@@ -89,7 +89,7 @@ const Sidebar = ({drawerWidth, mobileOpen, handleDrawerToggle, handleDrawerTrans
     <Drawer
       variant="permanent"
       sx={{
-        display: { xs: 'none', sm: 'block' },
+        display: { xs: 'none', md: 'block' },
         '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
       }}
       open

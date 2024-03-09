@@ -3,8 +3,17 @@ import CallMadeIcon from '@mui/icons-material/CallMade';
 import CallReceivedIcon from '@mui/icons-material/CallReceived';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import React from 'react'
+import { Transaction } from '../types';
+import { calculations } from '../utils/financeCalculations';
 
-const MonthlySummary = () => {
+interface MonthlySummaryProps {
+  monthlyTransactions: Transaction[]
+}
+
+const MonthlySummary = ({monthlyTransactions}:MonthlySummaryProps) => {
+
+  const {income, expense, balance} = calculations(monthlyTransactions);
+
   return (
     <Grid container spacing={{xs: 1, sm: 2}} mb={2}>
       <Grid item xs={4} display={'flex'} flexDirection={'column'}>
@@ -28,7 +37,7 @@ const MonthlySummary = () => {
               sx={{wordBreak: 'break-word', fontSize: {xs: '.8rem', sm: '1rem', md: '1.2rem'}}}
               flexGrow={1}
             >
-            &yen;300
+            &yen;{income}
             </Typography>
           </CardContent>
         </Card>
@@ -54,7 +63,7 @@ const MonthlySummary = () => {
               fontWeight={'fontWeightBold'}
               sx={{wordBreak: 'break-word', fontSize: {xs: '.8rem', sm: '1rem', md: '1.2rem'}}}
             >
-              &yen;100
+              &yen;{expense}
             </Typography>
           </CardContent>
         </Card>
@@ -80,7 +89,7 @@ const MonthlySummary = () => {
               fontWeight={'fontWeightBold'}
               sx={{wordBreak: 'break-word', fontSize: {xs: '.8rem', sm: '1rem', md: '1.2rem'}}}
             >
-              &yen;200
+              &yen;{balance}
             </Typography>
           </CardContent>
         </Card>

@@ -7,15 +7,16 @@ import TransactionForm from '../components/TransactionForm'
 import { Transaction } from '../types'
 
 interface HomeProps {
-  monthlyTransactions: Transaction[]
+  monthlyTransactions: Transaction[],
+  setCurrentMouth: React.Dispatch<React.SetStateAction<Date>>
 }
 
-const Home = ({monthlyTransactions}: HomeProps) => {
+const Home = ({monthlyTransactions, setCurrentMouth}: HomeProps) => {
   return (
     <Box sx={{display: 'flex'}}>
       <Box sx={{flexGrow: 1}}>
         <MonthlySummary monthlyTransactions={monthlyTransactions}/>
-        <Calender monthlyTransactions={monthlyTransactions}/>
+        <Calender monthlyTransactions={monthlyTransactions} setCurrentMouth={setCurrentMouth}/>
       </Box>
       <Box>
         <TransactionMenu />

@@ -36,9 +36,7 @@ function App() {
               id: doc.id
             } as Transaction
           });
-          console.log(transactionsData);
           setTransaction(transactionsData);
-          
         }
         catch(err) {
           if(isFireStoreError(err)) {
@@ -56,9 +54,6 @@ function App() {
   const monthlyTransactions = transaction.filter(transaction => {
     return transaction.date.startsWith(formatMonth(currentMouth))
   })
-
-  console.log(monthlyTransactions);
-  
 
   return (
     <ThemeProvider theme={theme}>

@@ -1,8 +1,19 @@
 import React from 'react'
+import DailySumary from './DailySumary'
+import { Transaction } from '../types'
 
-const TransactionMenu = () => {
+
+interface TransactionMenuProps {
+  dailyTransactions: Transaction[]
+  currentDay: string
+}
+
+const TransactionMenu = ({dailyTransactions, currentDay}:TransactionMenuProps) => {
   return (
-    <div>TransactionMenu</div>
+      <DailySumary 
+        dailyTransactions={dailyTransactions}
+        currentDay={currentDay}
+      />
   )
 }
 

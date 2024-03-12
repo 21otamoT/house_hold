@@ -8,7 +8,7 @@ import AppLayout from './components/layout/AppLayout';
 import {theme} from './theme/theme'
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { Transaction } from './types/index';
-import { addDoc, collection, getDocs } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import { format } from 'date-fns'
 import { formatMonth } from './utils/formatting';
@@ -22,7 +22,6 @@ function App() {
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [currentMouth, setCurrentMouth] = useState(new Date());
-  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -83,6 +82,48 @@ function App() {
     }
   }
 
+  // 削除処理関数
+  const onDeleteTransaction = async (transactionId: string) => {
+    try {
+      //firestoreのデータを削除
+      await deleteDoc(doc(db, "Transactions", transactionId));
+      const filterdTransactions = transactions.filter((transaction) => transaction.id !== transactionId);
+      setTransactions(filterdTransactions);
+    }
+    catch(err) {
+      if(isFireStoreError(err)) {
+        console.error('firestore',err);
+      }
+      else {
+        console.error("common",err);
+      }
+    }
+  }
+
+  // 更新機能関数
+  const onUpdateTransaction = async (transaction: Schema, transactionId: string) => {
+    try {
+      const docRef = doc(db, "Transactions", transactionId);
+
+      //更新機能
+      await updateDoc(docRef, transaction);
+
+      //フロントの更新
+      const updatedTransactions = transactions.map((t) => 
+        t.id === transactionId ? {...t, ...transaction} : t
+      ) as Transaction[];
+      setTransactions(updatedTransactions);
+    }
+    catch(err) {
+      if(isFireStoreError(err)) {
+        console.error('firestore',err);
+      }
+      else {
+        console.error("common",err);
+      }
+    }
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -96,8 +137,8 @@ function App() {
                   monthlyTransactions={monthlyTransactions} 
                   setCurrentMouth={setCurrentMouth}
                   onSaveTransaction={handleSaveTransaction}
-                  selectedTransaction={selectedTransaction}
-                  setSelectedTransaction={setSelectedTransaction}
+                  onDeleteTransaction={onDeleteTransaction}
+                  onUpdateTransaction={onUpdateTransaction}
                 />
               }
             />

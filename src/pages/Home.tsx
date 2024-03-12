@@ -12,20 +12,21 @@ interface HomeProps {
   monthlyTransactions: Transaction[];
   setCurrentMouth: React.Dispatch<React.SetStateAction<Date>>;
   onSaveTransaction: (transaction: Schema) => Promise<void>;
-  selectedTransaction: Transaction | null;
-  setSelectedTransaction:  React.Dispatch<React.SetStateAction<Transaction | null>>
+  onDeleteTransaction: (transactionId: string) => Promise<void>
+  onUpdateTransaction: (transaction: Schema, transactionId: string) => Promise<void>
 }
 
 const Home = ({
   monthlyTransactions, 
   setCurrentMouth, 
   onSaveTransaction,
-  selectedTransaction,
-  setSelectedTransaction
+  onDeleteTransaction,
+  onUpdateTransaction
 }: HomeProps) => {
-  const today = format(new Date(), 'yyyy年MM年dd日')
-  const [currentDay,setCurrentDay] = useState(today)
-  const [isEntryDrawerOpen, setIsEntryDrawerOpen] = useState(false)
+  const today = format(new Date(), 'yyyy年MM年dd日');
+  const [currentDay,setCurrentDay] = useState(today);
+  const [isEntryDrawerOpen, setIsEntryDrawerOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
 
   const dailyTransactions = monthlyTransactions.filter((transaction) => {
     return transaction.date === currentDay;
@@ -33,11 +34,17 @@ const Home = ({
 
   const onCloseForm = () => {
     setIsEntryDrawerOpen(!isEntryDrawerOpen)
+    setSelectedTransaction(null);
   }
 
   //フォームの開閉処理
   const handleAddTransactionForm = () => {
-    setIsEntryDrawerOpen(!isEntryDrawerOpen)
+    if (selectedTransaction) { 
+      setSelectedTransaction(null)
+    }
+    else {
+      setIsEntryDrawerOpen(!isEntryDrawerOpen)
+    }
   }
 
   //取り引きが選択された時の処理
@@ -71,6 +78,9 @@ const Home = ({
           currentDay={currentDay}
           onSaveTransaction={onSaveTransaction}
           selectedTransaction={selectedTransaction}
+          onDeleteTransaction={onDeleteTransaction}
+          setSelectedTransaction={setSelectedTransaction}
+          onUpdateTransaction={onUpdateTransaction}
         />
       </Box>
     </Box>

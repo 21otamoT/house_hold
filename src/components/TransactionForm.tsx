@@ -36,17 +36,10 @@ interface TransactionFormProps {
   isEntryDrawerOpen: boolean;
   currentDay: string;
   selectedTransaction: Transaction | null;
-  setSelectedTransaction: React.Dispatch<
-    React.SetStateAction<Transaction | null>
-  >;
+  setSelectedTransaction: React.Dispatch<React.SetStateAction<Transaction | null>>;
   onSaveTransaction: (transaction: Schema) => Promise<void>;
-  onDeleteTransaction: (
-    transactionIds: string | readonly string[]
-  ) => Promise<void>;
-  onUpdateTransaction: (
-    transaction: Schema,
-    transactionId: string
-  ) => Promise<void>;
+  onDeleteTransaction: (transactionIds: string | readonly string[]) => Promise<void>;
+  onUpdateTransaction: (transaction: Schema, transactionId: string) => Promise<void>;
   isDialogOpen: boolean;
   setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isMobile: boolean;

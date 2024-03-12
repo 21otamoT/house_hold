@@ -1,27 +1,100 @@
 import React from 'react'
 import DailySumary from './DailySumary'
 import { Transaction } from '../types'
-import { Box, Button } from '@mui/material'
+import { Box, Button, Card, CardActionArea, CardContent, Drawer, Grid, List, ListItem, Stack, Typography } from '@mui/material'
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import { formatCurrency } from '../utils/formatting';
+import iconComponents from './common/iconComponents';
 
 
 interface TransactionMenuProps {
   dailyTransactions: Transaction[]
   currentDay: string
   handleAddTransactionForm: () => void
+  onSelectTransaction: (transaction: Transaction) => void
 }
 
-const TransactionMenu = ({dailyTransactions, currentDay, handleAddTransactionForm}:TransactionMenuProps) => {
+const TransactionMenu = ({
+  dailyTransactions, 
+  currentDay,
+  handleAddTransactionForm,
+  onSelectTransaction
+}:TransactionMenuProps) => {
   return (
-    <Box>
-      <DailySumary 
-        dailyTransactions={dailyTransactions}
-        currentDay={currentDay}
-      />
-      <Button startIcon={<AddCircleIcon />} color='primary' onClick={handleAddTransactionForm}>
-        内訳を追加
-      </Button>
-    </Box>
+    <Drawer>
+      <Stack>
+        <DailySumary 
+          dailyTransactions={dailyTransactions}
+          currentDay={currentDay}
+        />
+        <Button startIcon={<AddCircleIcon />} color='primary' onClick={handleAddTransactionForm}>
+          内訳を追加
+        </Button>
+        {/* 取引一覧 */}
+        <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
+            <List aria-label="取引履歴">
+              <Stack spacing={2}>
+                {dailyTransactions.map((transaction) => (
+                  <ListItem disablePadding key={transaction.id}>
+                    <Card
+                      sx={{
+                        width: "100%",
+                        backgroundColor:
+                          transaction.type === "income"
+                            ? (theme) => theme.palette.incomeColor.light
+                            : (theme) => theme.palette.expensColor.light,
+                      }}
+                      onClick={() => onSelectTransaction(transaction)}
+                    >
+                      <CardActionArea>
+                        <CardContent>
+                          <Grid
+                            container
+                            spacing={1}
+                            alignItems="center"
+                            wrap="wrap"
+                          >
+                            <Grid item xs={1}>
+                              {/* icon */}
+                              {iconComponents[transaction.category]}
+                            </Grid>
+                            <Grid item xs={2.5}>
+                              <Typography
+                                variant="caption"
+                                display="block"
+                                gutterBottom
+                              >
+                                {transaction.category}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                              <Typography variant="body2" gutterBottom>
+                                {transaction.content}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={4.5}>
+                              <Typography
+                                gutterBottom
+                                textAlign={"right"}
+                                color="text.secondary"
+                                sx={{
+                                  wordBreak: "break-all",
+                                }}
+                              >
+                                &yen;{formatCurrency(transaction.amount)}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                        </CardContent>
+                      </CardActionArea>
+                    </Card>
+                  </ListItem>
+                ))}
+              </Stack>
+            </List>
+          </Box>
+        </Stack>
+    </Drawer>
   )
 }
 

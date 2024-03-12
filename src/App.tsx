@@ -20,9 +20,9 @@ function App() {
     return typeof err === 'object' && err !== null && 'code' in err
   }
 
-  const [transaction, setTransaction] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [currentMouth, setCurrentMouth] = useState(new Date());
-  const date = format(currentMouth, 'yyyy-MM');
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -37,7 +37,7 @@ function App() {
               id: doc.id
             } as Transaction
           });
-          setTransaction(transactionsData);
+          setTransactions(transactionsData);
         }
         catch(err) {
           if(isFireStoreError(err)) {
@@ -52,16 +52,27 @@ function App() {
     },[])
 
   //一月分のデータを取得
-  const monthlyTransactions = transaction.filter(transaction => {
+  const monthlyTransactions = transactions.filter(transaction => {
     return transaction.date.startsWith(formatMonth(currentMouth))
   })
 
   //取引を保存する処理
-  const handleSaveTrqnsaction = async (transaction: Schema) => {
+  const handleSaveTransaction = async (transaction: Schema) => {
     try {
       // Add a new document with a generated id.
       const docRef = await addDoc(collection(db, "Transactions"), transaction);
-      console.log("Document written with ID: ", docRef.id);
+      console.log("Firestoreで自動生成されたID: ", docRef.id);
+
+      const newTransaction = {
+        id: docRef.id,
+        ...transaction
+      } as Transaction
+
+      setTransactions(prevTransaction => [
+        ...prevTransaction, 
+        newTransaction
+      ])
+
     } catch(err) {
       if(isFireStoreError(err)) {
         console.error(err);
@@ -84,7 +95,9 @@ function App() {
                 <Home 
                   monthlyTransactions={monthlyTransactions} 
                   setCurrentMouth={setCurrentMouth}
-                  onSaveTrqnsaction={handleSaveTrqnsaction}
+                  onSaveTransaction={handleSaveTransaction}
+                  selectedTransaction={selectedTransaction}
+                  setSelectedTransaction={setSelectedTransaction}
                 />
               }
             />

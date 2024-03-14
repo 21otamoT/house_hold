@@ -16,12 +16,14 @@ import { Schema } from './validations/schema';
 
 
 function App() {
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [currentMouth, setCurrentMouth] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(true)
+
+  //firebaseエラーかどうかの処理
   function isFireStoreError(err: unknown):err is {code: string, message: string} {
     return typeof err === 'object' && err !== null && 'code' in err
   }
-
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [currentMouth, setCurrentMouth] = useState(new Date());
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -45,6 +47,9 @@ function App() {
           else {
             console.error("common",err);
           }
+        }
+        finally {
+          setIsLoading(false)
         }
       }
       fetchTransactions();
@@ -149,6 +154,7 @@ function App() {
                   currentMouth={currentMouth} 
                   setCurrentMonth={setCurrentMouth}
                   monthlyTransactions={monthlyTransactions}
+                  isLoading={isLoading}
                 />
               } 
             />

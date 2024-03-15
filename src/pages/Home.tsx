@@ -1,4 +1,4 @@
-import { Box } from '@mui/material'
+import { Box, useMediaQuery, useTheme } from '@mui/material'
 import React, { useState } from 'react'
 import MonthlySummary from '../components/MonthlySummary'
 import Calender from '../components/Calender'
@@ -7,12 +7,13 @@ import TransactionForm from '../components/TransactionForm'
 import { Transaction } from '../types'
 import { format } from 'date-fns'
 import { Schema } from '../validations/schema'
+import { DateClickArg } from '@fullcalendar/interaction'
 
 interface HomeProps {
   monthlyTransactions: Transaction[];
   setCurrentMouth: React.Dispatch<React.SetStateAction<Date>>;
   onSaveTransaction: (transaction: Schema) => Promise<void>;
-  onDeleteTransaction: (transactionId: string) => Promise<void>
+  onDeleteTransaction: (transactionId: string | readonly string[]) => Promise<void>
   onUpdateTransaction: (transaction: Schema, transactionId: string) => Promise<void>
 }
 
@@ -27,30 +28,62 @@ const Home = ({
   const [currentDay,setCurrentDay] = useState(today);
   const [isEntryDrawerOpen, setIsEntryDrawerOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
-
+  const [isMobileDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
+  
+  // 1日分のデータを取得
   const dailyTransactions = monthlyTransactions.filter((transaction) => {
     return transaction.date === currentDay;
   });
 
   const onCloseForm = () => {
-    setIsEntryDrawerOpen(!isEntryDrawerOpen)
     setSelectedTransaction(null);
+    if(isMobile) {
+      setIsDialogOpen(!isDialogOpen);
+    }
+    else {
+      setIsEntryDrawerOpen(!isEntryDrawerOpen);
+    }
   }
 
   //フォームの開閉処理
   const handleAddTransactionForm = () => {
-    if (selectedTransaction) { 
-      setSelectedTransaction(null)
+    
+    if(isMobile) {
+      setIsDialogOpen(true);
     }
     else {
-      setIsEntryDrawerOpen(!isEntryDrawerOpen)
+      if (selectedTransaction) { 
+        setSelectedTransaction(null);
+      }
+      else {
+        setIsEntryDrawerOpen(!isEntryDrawerOpen);
+      }
     }
   }
 
   //取り引きが選択された時の処理
   const handleSelectTransaction = (transaction: Transaction) => {
-    setIsEntryDrawerOpen(true)
     setSelectedTransaction(transaction)
+    if(isMobile) {
+      setIsDialogOpen(true)
+    }
+    else {
+      setIsEntryDrawerOpen(true)
+    }
+  }
+
+  // モバイル用Drawerを閉じる関数
+  const handleCloseMobileDrawer = () => {
+    setIsDrawerOpen(false);
+  }
+
+  // 日付を選択した時の処理
+  const handleDateClick = (dateInfo:DateClickArg) => {
+    setCurrentDay(dateInfo.dateStr);
+    setIsDrawerOpen(true);
   }
 
   return (
@@ -63,6 +96,7 @@ const Home = ({
           setCurrentDay={setCurrentDay}
           currentDay={currentDay}
           today={today}
+          onDateClick={handleDateClick}
           />
       </Box>
       <Box>
@@ -71,6 +105,9 @@ const Home = ({
           currentDay={currentDay}
           handleAddTransactionForm={handleAddTransactionForm}
           onSelectTransaction={handleSelectTransaction}
+          isMobile={isMobile}
+          isMobileDrawerOpen={isMobileDrawerOpen}
+          handleCloseMobileDrawer={handleCloseMobileDrawer}
         />
         <TransactionForm 
           onCloseForm={onCloseForm}
@@ -81,6 +118,9 @@ const Home = ({
           onDeleteTransaction={onDeleteTransaction}
           setSelectedTransaction={setSelectedTransaction}
           onUpdateTransaction={onUpdateTransaction}
+          isMobile={isMobile}
+          isDialogOpen={isDialogOpen}
+          setIsDialogOpen={setIsDialogOpen}
         />
       </Box>
     </Box>

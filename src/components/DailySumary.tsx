@@ -1,4 +1,4 @@
-import { Card, CardActionArea, CardContent, Grid, List, ListItem, Stack, Typography } from '@mui/material'
+import { Box, Card, CardActionArea, CardContent, Grid, List, ListItem, Stack, Typography } from '@mui/material'
 import CallMadeIcon from '@mui/icons-material/CallMade';
 import CallReceivedIcon from '@mui/icons-material/CallReceived';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
@@ -11,19 +11,21 @@ import iconComponents from './common/iconComponents';
 
 
 interface DailySumaryProps {
-  dailyTransactions: Transaction[],
+  dailyTransactions: Transaction[]
   currentDay: string
+  columns: number
 }
 
-const DailySumary = ({dailyTransactions, currentDay}:DailySumaryProps) => {
+const DailySumary = ({dailyTransactions, currentDay, columns}:DailySumaryProps) => {
   const {income, expense, balance} = calculations(dailyTransactions);
+  const isThreeColumnsLayout = columns === 3;
 
   return (
-    <div>
+    <Box>
       <Typography fontWeight={'bold'}>日時:{currentDay}</Typography>
       <Grid container spacing={{xs: 1, sm: 2}} mb={2} sx={{pl:{sm: '8px', md: '12px', lg: '16px'}}}>
         {/* 収入 */}
-        <Grid item xs={4} display={'flex'} flexDirection={'column'}>
+        <Grid item xs={isThreeColumnsLayout?4:6} display={'flex'} flexDirection={'column'}>
           <Card 
             sx={{
               bgcolor: theme => theme.palette.incomeColor.main, 
@@ -50,7 +52,7 @@ const DailySumary = ({dailyTransactions, currentDay}:DailySumaryProps) => {
           </Card>
         </Grid>
         {/* 支出 */}
-        <Grid item xs={4} display={'flex'} flexDirection={'column'}>
+        <Grid item xs={isThreeColumnsLayout?4:6} display={'flex'} flexDirection={'column'}>
           <Card 
             sx={{
               bgcolor: theme => theme.palette.expensColor.main, 
@@ -76,7 +78,7 @@ const DailySumary = ({dailyTransactions, currentDay}:DailySumaryProps) => {
           </Card>
         </Grid>
         {/* 残高 */}
-        <Grid item xs={4} display={'flex'} flexDirection={'column'}>
+        <Grid item xs={isThreeColumnsLayout?4:12} display={'flex'} flexDirection={'column'}>
           <Card 
             sx={{
               bgcolor: theme => theme.palette.balanceColor.main, 
@@ -138,7 +140,7 @@ const DailySumary = ({dailyTransactions, currentDay}:DailySumaryProps) => {
             ))}
         </List>
       </Stack>
-    </div>
+    </Box>
   )
 }
 

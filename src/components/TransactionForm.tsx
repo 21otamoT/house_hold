@@ -98,7 +98,7 @@ const TransactionForm = ({
       category: "",
       content: "",
     },
-    resolver: zodResolver(transactionSchema),
+    // resolver: zodResolver(transactionSchema),
   });
 
   // 収支タイプを切り替える関数

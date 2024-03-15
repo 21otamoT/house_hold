@@ -12,20 +12,52 @@ interface TransactionMenuProps {
   currentDay: string
   handleAddTransactionForm: () => void
   onSelectTransaction: (transaction: Transaction) => void
+  isMobile: boolean
+  isMobileDrawerOpen: boolean
+  handleCloseMobileDrawer: () => void
 }
 
 const TransactionMenu = ({
   dailyTransactions, 
   currentDay,
   handleAddTransactionForm,
-  onSelectTransaction
+  onSelectTransaction,
+  isMobile,
+  isMobileDrawerOpen,
+  handleCloseMobileDrawer
 }:TransactionMenuProps) => {
   return (
-    <Drawer>
+    <Drawer 
+      sx={{
+        width: isMobile ? 'auto' : 320,
+        '& .MuiDrawer-paper': {
+          width: isMobile ? 'auto' : 320,
+          boxSizing: 'border-box',
+          p: 2,
+          ...(isMobile && {
+            borderTopRightRadius: 8,
+            borderTopLeftRadius: 8,
+            height: '80vh'
+          }),
+          ...(!isMobile && {
+            top: 64,
+            height: 'calc(100% - 64px)',
+          })
+        }
+      }}
+      variant={isMobile ? 'temporary' : 'permanent'}
+      anchor={isMobile ? 'bottom' : 'right'}
+      open={isMobileDrawerOpen}
+      onClose={handleCloseMobileDrawer}
+      ModalProps={{
+        keepMounted: true, 
+      }}
+    >
       <Stack>
         <DailySumary 
           dailyTransactions={dailyTransactions}
           currentDay={currentDay}
+          columns={isMobile ? 3 : 2}
         />
         <Button startIcon={<AddCircleIcon />} color='primary' onClick={handleAddTransactionForm}>
           内訳を追加

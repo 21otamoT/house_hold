@@ -5,6 +5,7 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import React from 'react'
 import { Transaction } from '../types';
 import { calculations } from '../utils/financeCalculations';
+import { formatCurrency } from '../utils/formatting';
 
 interface MonthlySummaryProps {
   monthlyTransactions: Transaction[]
@@ -37,7 +38,7 @@ const MonthlySummary = ({monthlyTransactions}:MonthlySummaryProps) => {
               sx={{wordBreak: 'break-word', fontSize: {xs: '.8rem', sm: '1rem', md: '1.2rem'}}}
               flexGrow={1}
             >
-            &yen;{income}
+            &yen;{formatCurrency(income)}
             </Typography>
           </CardContent>
         </Card>
@@ -63,7 +64,7 @@ const MonthlySummary = ({monthlyTransactions}:MonthlySummaryProps) => {
               fontWeight={'fontWeightBold'}
               sx={{wordBreak: 'break-word', fontSize: {xs: '.8rem', sm: '1rem', md: '1.2rem'}}}
             >
-              &yen;{expense}
+              &yen;{formatCurrency(expense)}
             </Typography>
           </CardContent>
         </Card>
@@ -89,7 +90,7 @@ const MonthlySummary = ({monthlyTransactions}:MonthlySummaryProps) => {
               fontWeight={'fontWeightBold'}
               sx={{wordBreak: 'break-word', fontSize: {xs: '.8rem', sm: '1rem', md: '1.2rem'}}}
             >
-              &yen;{balance}
+              &yen;{formatCurrency(balance)}
             </Typography>
           </CardContent>
         </Card>

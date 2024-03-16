@@ -1,26 +1,28 @@
-import * as React from 'react';
-import { alpha, useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Transaction } from '../types';
-import { calculations } from '../utils/financeCalculations';
-import { Grid } from '@mui/material';
-import { formatCurrency } from '../utils/formatting';
-import iconComponents from './common/iconComponents';
-import { compareDesc, parseISO } from 'date-fns';
+import * as React from "react";
+import { alpha, useTheme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import Checkbox from "@mui/material/Checkbox";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { Transaction } from "../types";
+import { calculations } from "../utils/financeCalculations";
+import { Grid } from "@mui/material";
+import { formatCurrency } from "../utils/formatting";
+import iconComponents from "./common/iconComponents";
+import { compareDesc, parseISO } from "date-fns";
+import useMonthlyTransactions from "../hooks/useMonthlyTransactions";
+import { useAppContext } from "../context/AppContext";
 interface TransactionTableHeadProps {
   numSelected: number;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -29,8 +31,7 @@ interface TransactionTableHeadProps {
 
 //テーブルヘッド
 function TransactionTableHead(props: TransactionTableHeadProps) {
-  const { onSelectAllClick, numSelected, rowCount } =
-    props;
+  const { onSelectAllClick, numSelected, rowCount } = props;
 
   return (
     <TableHead>
@@ -42,14 +43,14 @@ function TransactionTableHead(props: TransactionTableHeadProps) {
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
             inputProps={{
-              'aria-label': 'select all desserts',
+              "aria-label": "select all desserts",
             }}
           />
         </TableCell>
-        <TableCell align={'left'}>日付</TableCell>
-        <TableCell align={'left'}>カテゴリ</TableCell>
-        <TableCell align={'left'}>金額</TableCell>
-        <TableCell align={'left'}>内容</TableCell>
+        <TableCell align={"left"}>日付</TableCell>
+        <TableCell align={"left"}>カテゴリ</TableCell>
+        <TableCell align={"left"}>金額</TableCell>
+        <TableCell align={"left"}>内容</TableCell>
       </TableRow>
     </TableHead>
   );
@@ -71,13 +72,16 @@ function TransactionTableToolbar(props: TransactionTableToolbarProps) {
         pr: { xs: 1, sm: 1 },
         ...(numSelected > 0 && {
           bgcolor: (theme) =>
-            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+            alpha(
+              theme.palette.primary.main,
+              theme.palette.action.activatedOpacity
+            ),
         }),
       }}
     >
       {numSelected > 0 ? (
         <Typography
-          sx={{ flex: '1 1 100%' }}
+          sx={{ flex: "1 1 100%" }}
           color="inherit"
           variant="subtitle1"
           component="div"
@@ -86,7 +90,7 @@ function TransactionTableToolbar(props: TransactionTableToolbarProps) {
         </Typography>
       ) : (
         <Typography
-          sx={{ flex: '1 1 100%' }}
+          sx={{ flex: "1 1 100%" }}
           variant="h6"
           id="tableTitle"
           component="div"
@@ -111,34 +115,37 @@ interface FinancialItemProps {
   color: string;
 }
 
-function FinancialItem({title, value, color}: FinancialItemProps) {
+function FinancialItem({ title, value, color }: FinancialItemProps) {
   return (
-    <Grid item textAlign={'center'}>
-      <Typography variant='subtitle1' component={'div'}>
+    <Grid item textAlign={"center"}>
+      <Typography variant="subtitle1" component={"div"}>
         {title}
       </Typography>
-      <Typography 
-        component={'span'}
-        fontWeight={'fontWeightBold'} 
+      <Typography
+        component={"span"}
+        fontWeight={"fontWeightBold"}
         sx={{
-            color: color, 
-            fontSize:{xs: '0.8rem', sm: '1rem', md: '1.2rem'},
-            wordBreak: 'break-word'
-          }}
+          color: color,
+          fontSize: { xs: "0.8rem", sm: "1rem", md: "1.2rem" },
+          wordBreak: "break-word",
+        }}
       >
         &yen;{formatCurrency(value)}
       </Typography>
     </Grid>
-  )
+  );
 }
 
-interface TransactionTableProps {
-  monthlyTransactions: Transaction[];
-  onDeleteTransaction: (transactionId: string | readonly string[]) => Promise<void>;
-}
+// interface TransactionTableProps {
+//   monthlyTransactions: Transaction[];
+//   onDeleteTransaction: (transactionId: string | readonly string[]) => Promise<void>;
+// }
 
 // 本体
-export default function TransactionTable({ monthlyTransactions, onDeleteTransaction }: TransactionTableProps) {
+export default function TransactionTable() {
+  // { monthlyTransactions, onDeleteTransaction }: TransactionTableProps
+  const monthlyTransactions = useMonthlyTransactions();
+  const { onDeleteTransaction } = useAppContext();
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -166,7 +173,7 @@ export default function TransactionTable({ monthlyTransactions, onDeleteTransact
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
+        selected.slice(selectedIndex + 1)
       );
     }
     setSelected(newSelected);
@@ -176,7 +183,9 @@ export default function TransactionTable({ monthlyTransactions, onDeleteTransact
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -184,51 +193,55 @@ export default function TransactionTable({ monthlyTransactions, onDeleteTransact
   const handleDelete = () => {
     onDeleteTransaction(selected);
     setSelected([]);
-  }
+  };
 
   const isSelected = (id: string) => selected.indexOf(id) !== -1;
 
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - monthlyTransactions.length) : 0;
+    page > 0
+      ? Math.max(0, (1 + page) * rowsPerPage - monthlyTransactions.length)
+      : 0;
 
   // 取り引きデータを一つずつ取得
-  const visibleRows = React.useMemo(
-    () => {
-      const sortedMonthlyTransactions = [...monthlyTransactions].sort((a,b) => (
-        compareDesc(parseISO(a.date), parseISO(b.date))
-      ));
-        return sortedMonthlyTransactions.slice(
-          page * rowsPerPage,
-          page * rowsPerPage + rowsPerPage,
-        );
-      },[ page, rowsPerPage, monthlyTransactions]);
+  const visibleRows = React.useMemo(() => {
+    const sortedMonthlyTransactions = [...monthlyTransactions].sort((a, b) =>
+      compareDesc(parseISO(a.date), parseISO(b.date))
+    );
+    return sortedMonthlyTransactions.slice(
+      page * rowsPerPage,
+      page * rowsPerPage + rowsPerPage
+    );
+  }, [page, rowsPerPage, monthlyTransactions]);
 
-  const {income, expense, balance} = calculations(monthlyTransactions)
+  const { income, expense, balance } = calculations(monthlyTransactions);
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
-
-      <Grid container sx={{borderBottom: '1px solid rgba(224, 224, 224, 1)'}}>
-        <FinancialItem 
-          title={'収入'}
-          value={income}
-          color={theme.palette.incomeColor.main}
-        />
-        <FinancialItem 
-          title={'支出'}
-          value={expense}
-          color={theme.palette.expensColor.main}
-        />
-        <FinancialItem 
-          title={'残高'}
-          value={balance}
-          color={theme.palette.balanceColor.main}
-        />
-      </Grid>
+    <Box sx={{ width: "100%" }}>
+      <Paper sx={{ width: "100%", mb: 2 }}>
+        <Grid
+          container
+          sx={{ borderBottom: "1px solid rgba(224, 224, 224, 1)" }}
+        >
+          <FinancialItem
+            title={"収入"}
+            value={income}
+            color={theme.palette.incomeColor.main}
+          />
+          <FinancialItem
+            title={"支出"}
+            value={expense}
+            color={theme.palette.expensColor.main}
+          />
+          <FinancialItem
+            title={"残高"}
+            value={balance}
+            color={theme.palette.balanceColor.main}
+          />
+        </Grid>
 
         {/* ツールバー */}
-        <TransactionTableToolbar numSelected={selected.length} 
+        <TransactionTableToolbar
+          numSelected={selected.length}
           onDelete={handleDelete}
         />
 
@@ -237,7 +250,7 @@ export default function TransactionTable({ monthlyTransactions, onDeleteTransact
           <Table
             sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
-            size={'medium'}
+            size={"medium"}
           >
             {/* テーブルヘッド */}
             <TransactionTableHead
@@ -260,14 +273,14 @@ export default function TransactionTable({ monthlyTransactions, onDeleteTransact
                     tabIndex={-1}
                     key={transaction.id}
                     selected={isItemSelected}
-                    sx={{ cursor: 'pointer' }}
+                    sx={{ cursor: "pointer" }}
                   >
                     <TableCell padding="checkbox">
                       <Checkbox
                         color="primary"
                         checked={isItemSelected}
                         inputProps={{
-                          'aria-labelledby': labelId,
+                          "aria-labelledby": labelId,
                         }}
                       />
                     </TableCell>
@@ -279,7 +292,10 @@ export default function TransactionTable({ monthlyTransactions, onDeleteTransact
                     >
                       {transaction.date}
                     </TableCell>
-                    <TableCell align="left" sx={{display: 'flex', alignItems: 'center'}}>
+                    <TableCell
+                      align="left"
+                      sx={{ display: "flex", alignItems: "center" }}
+                    >
                       {iconComponents[transaction.category]}
                       {transaction.category}
                     </TableCell>
@@ -292,7 +308,7 @@ export default function TransactionTable({ monthlyTransactions, onDeleteTransact
               {emptyRows > 0 && (
                 <TableRow
                   style={{
-                    height: (53) * emptyRows,
+                    height: 53 * emptyRows,
                   }}
                 >
                   <TableCell colSpan={6} />

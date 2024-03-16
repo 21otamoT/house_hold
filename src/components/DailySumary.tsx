@@ -108,12 +108,15 @@ const DailySumary = ({dailyTransactions, currentDay, columns}:DailySumaryProps) 
         <List>
           {dailyTransactions.map(dailyTransaction => (
             <ListItem>
-              <Card sx={{
+              <Card 
+                sx={{
                       width: '100%',
                       backgroundColor: dailyTransaction.type === 'income' 
                       ? theme => theme.palette.incomeColor.light
                       : theme => theme.palette.expensColor.light 
-                    }}>
+                }}
+                key={dailyTransaction.id}
+              >
                 <CardActionArea>
                   <CardContent>
                     <Grid container spacing={{xs:1, sm:2}} alignItems={'center'} wrap='wrap'>

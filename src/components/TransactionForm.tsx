@@ -29,20 +29,28 @@ import SavingsIcon from "@mui/icons-material/Savings";
 import AddBusinessIcon from "@mui/icons-material/AddBusiness";
 import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Schema,  } from "../validations/schema";
+import { Schema } from "../validations/schema";
+import { useAppContext } from "../context/AppContext";
 // transactionSchema
 interface TransactionFormProps {
   onCloseForm: () => void;
   isEntryDrawerOpen: boolean;
   currentDay: string;
   selectedTransaction: Transaction | null;
-  setSelectedTransaction: React.Dispatch<React.SetStateAction<Transaction | null>>;
-  onSaveTransaction: (transaction: Schema) => Promise<void>;
-  onDeleteTransaction: (transactionIds: string | readonly string[]) => Promise<void>;
-  onUpdateTransaction: (transaction: Schema, transactionId: string) => Promise<void>;
+  setSelectedTransaction: React.Dispatch<
+    React.SetStateAction<Transaction | null>
+  >;
+  // onSaveTransaction: (transaction: Schema) => Promise<void>;
+  // onDeleteTransaction: (
+  //   transactionIds: string | readonly string[]
+  // ) => Promise<void>;
+  // onUpdateTransaction: (
+  //   transaction: Schema,
+  //   transactionId: string
+  // ) => Promise<void>;
   isDialogOpen: boolean;
   setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  isMobile: boolean;
+  // isMobile: boolean;
 }
 
 type IncomeExpense = "income" | "expense";
@@ -57,15 +65,22 @@ const TransactionForm = ({
   isEntryDrawerOpen,
   currentDay,
   selectedTransaction,
-  onSaveTransaction,
-  onDeleteTransaction,
-  onUpdateTransaction,
+  // onSaveTransaction,
+  // onDeleteTransaction,
+  // onUpdateTransaction,
   isDialogOpen,
   setSelectedTransaction,
   setIsDialogOpen,
-  isMobile,
-}: TransactionFormProps) => {
+}: // isMobile,
+TransactionFormProps) => {
+  const {
+    isMobile,
+    onSaveTransaction,
+    onDeleteTransaction,
+    onUpdateTransaction,
+  } = useAppContext();
   const formWidth = 320;
+
   // 支出用カテゴリ
   const expenseCategories: CategoryItem[] = [
     { label: "食費", icon: <FastfoodIcon fontSize="small" /> },
@@ -75,6 +90,7 @@ const TransactionForm = ({
     { label: "娯楽", icon: <SportsTennisIcon fontSize="small" /> },
     { label: "交通費", icon: <TrainIcon fontSize="small" /> },
   ];
+
   // 収入用カテゴリ
   const incomeCategories: CategoryItem[] = [
     { label: "給与", icon: <WorkIcon fontSize="small" /> },
@@ -290,7 +306,8 @@ const TransactionForm = ({
                 helperText={errors.amount?.message}
                 {...field}
                 value={field.value === 0 ? "" : field.value}
-                onChange={(e) => {//入力された値を数値として扱う
+                onChange={(e) => {
+                  //入力された値を数値として扱う
                   const newValue = parseInt(e.target.value, 10) || 0;
                   field.onChange(newValue);
                 }}

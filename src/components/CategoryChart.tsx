@@ -126,7 +126,7 @@ const CategoryChart = () =>
             onChange={handleChange}
           >
             <MenuItem value={"income"}>収入</MenuItem>
-            <MenuItem value={"expence"}>支出</MenuItem>
+            <MenuItem value={"expense"}>支出</MenuItem>
           </Select>
         </FormControl>
         <Box
